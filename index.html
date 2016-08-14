@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+    <title></title>
+
+    <link href="lib/ionic/css/ionic.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+
+    <!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above
+    <link href="css/ionic.app.css" rel="stylesheet">
+    -->
+
+    <!-- ionic/angularjs js -->
+    <script src="lib/ionic/js/ionic.bundle.js"></script>
+
+    <!-- Firebase and Angularfire -->
+    <script src="js/firebase-web.js"></script>
+    <script src="js/angularfire.js"></script>
+
+    <!-- cordova script (this will be a 404 during development) -->
+    <script src="cordova.js"></script>
+
+    <!-- your app's js -->
+    <script src="js/app.js"></script>
+    <script src="js/services.js"></script>
+    <script src="js/controllers.js"></script>
+  </head>
+  <body ng-app="noteit">
+
+    <ion-pane>
+      <ion-nav-bar class="bar-positive" align-title="center">
+        <ion-nav-back-button></ion-nav-back-button>
+      </ion-nav-bar>
+      <ion-nav-view></ion-nav-view>
+
+      <!-- HOME -->
+      <script type="text/ng-template" id="home.html">
+        <ion-view view-title="Home">
+          <ion-content class="note-content">
+              <div class="row">
+                <div class="col">
+                  <h3 class="text-center">Welcome to NoteIt!</h3>
+                  <p class="text-center">An easy to use app to help you stay organized</p>
+
+                  <a class="button button-block button-positive" ui-sref="listNotes">
+                    View Notes
+                  </a>
+
+                  <a class="button button-block button-balanced" ui-sref="addNote">
+                    Add Note
+                  </a>
+
+                  <a class="button button-block button-calm" ui-sref="editNote">
+                    Edit Notes
+                  </a>
+
+                  <a class="button button-block button-assertive" ui-sref="deleteNote">
+                    Delete Notes
+                  </a>
+                </div>
+              </div>
+          </ion-content>
+        </ion-view>
+      </script>
+
+
+      <!-- ADD -->
+      <script type="text/ng-template" id="addNote.html">
+        <ion-view view-title="Add Note">
+          <ion-content class="note-content">
+            <div class="row">
+              <div class="col">
+                <div class="list" ng-controller="AddNoteCtrl">
+                  <label class="item item-input">
+                    <input type="text" placeholder="Title" ng-model="title"/>
+                  </label>
+
+                  <label class="item item-input">
+                    <textarea type="text" placeholder="Note Body" ng-model="body">
+                      </textarea>
+                  </label>
+
+                  <div class="item button button-block button-positive"
+                       ng-model="addNoteButton"
+                       ng-disable="!title||!body"
+                       ng-click="saveNote()">
+                    Submit
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </ion-content>
+        </ion-view>
+      </script>
+
+
+      <!-- LIST -->
+      <script type="text/ng-template" id="listNotes.html">
+        <ion-view view-title="Notes">
+          <ion-content class="note-content">
+            <div class="row">
+              <div class="col">
+                <ion-list ng-controller="ListNotesCtrl">
+                  <ion-item ng-repeat="note in notes" class="note-listing">
+                    <a ui-sref="singleNote({id: note.$id})" nav-direction="enter">
+                      <h2>{{note.title}}</h2>
+                    </a>
+                  </ion-item>
+                </ion-list>
+              </div>
+            </div>
+          </ion-content>
+        </ion-view>
+      </script>
+
+
+      <!-- SINGLE -->
+      <script type="text/ng-template" id="singleNote.html">
+
+        <div ng-controller="SingleNoteCtrl">
+        <ion-view view-title="{{singleNote.title}}">
+          <ion-content class="note-content">
+            <div class="row">
+              <div class="col">
+                <p class="text-center">{{singleNote.body}}</p>
+              </div>
+            </div>
+          </ion-content>
+        </ion-view>
+        </div>
+      </script>
+
+      <!-- DELETE -->
+      <script type="text/ng-template" id="deleteNote.html">
+          <ion-view view-title="Delete">
+            <ion-content class="note-content">
+              <div class="row">
+                <div class="col">
+                <div ng-controller="DeleteNoteCtrl">
+                  <ion-list>
+                    <ion-item ng-repeat="note in notes">
+                      <div class="item button button-block button-positive"
+                           ng-model="delButton"
+                           ng-click="showDetails(note.$id)"
+                      >
+                        Delete {{note.title}}
+                      </div>
+                    </ion-item>
+                  </ion-list>
+                </div>
+              </div>
+              </div>
+            </ion-content>
+          </ion-view>>
+      </script>
+
+
+      <!-- EDIT -->
+      <script type="text/ng-template" id="editNote.html">
+        <ion-view view-title="Edit Notes">
+          <ion-content class="note-content">
+            <div class="row">
+              <div class="col">
+                <div ng-controller="EditNoteCtrl">
+                  <ion-list>
+                    <ion-item ng-repeat="note in notes" class="note-listing">
+                      <a ui-sref="updateNote({id: note.$id})" nav-direction="enter">
+                        <h2> Edit {{note.title}}</h2>
+                      </a>
+                    </ion-item>
+                  </ion-list>
+                </div>
+              </div>
+            </div>
+          </ion-content>
+        </ion-view>>
+      </script>
+
+      <!-- UPDATE -->
+      <script type="text/ng-template" id="updateNote.html">
+        <ion-view view-title="Update Note">
+          <ion-content class="note-content">
+            <div class="row">
+              <div class="col">
+                <div class="list" ng-controller="UpdateNoteCtrl">
+                  <label class="item item-input">
+                    <input type="text" placeholder="Title" ng-model="title"/>
+                  </label>
+
+                  <label class="item item-input">
+                    <textarea type="text" placeholder="Note Body" ng-model="body">
+                      </textarea>
+                  </label>
+
+                  <div class="item button button-block button-positive"
+                       ng-model="updateNoteButton"
+                       ng-disable="!title||!body"
+                       ng-click="updateNote(myid)">
+                    Submit
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </ion-content>
+        </ion-view>
+      </script>
+
+
+
+
+
+
+    </ion-pane>
+  </body>
+</html>

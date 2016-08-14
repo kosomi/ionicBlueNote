@@ -1,0 +1,15 @@
+body, h1, h2, h3, h4, h5, h6, p {
+    color: #fff;
+}
+h3 {
+    margin-bottom: 20px;
+}
+p {
+    margin-bottom: 3px;
+}
+.note-content {
+    background: #1766d6;
+}
+.note-listing {
+    background: #387ef5;
+}
